@@ -75,7 +75,7 @@ A branch `dev` do repositório King aceita selecionar o nó local explicitamente
    LAVALINK_PASSWORD=SENHA_GERADA_PELO_SETUP
    ```
 
-3. Reinicie o bot. Com `LAVALINK_LOCAL=true`, ele ignora os nós de `botconfig/lavalink.json` e tenta somente `king-lavalink-local`. Sem essa opção, os nós públicos configurados continuam sendo usados como antes.
+3. Reinicie o bot. Ao definir `LAVALINK_HOST` e `LAVALINK_PASSWORD` no `.env`, o King prioriza automaticamente o nó configurado por ambiente e ignora `botconfig/lavalink.json`. `LAVALINK_LOCAL=true` também força esse modo e valida que as credenciais locais estejam completas. Se nenhuma configuração explícita de nó estiver presente, a lista antiga de `botconfig/lavalink.json` continua sendo usada.
 4. Confirme nos logs que o node local conectou; em seguida teste busca/reprodução do YouTube e controles básicos.
 
 Se o bot e o Lavalink estiverem em contêineres diferentes, `127.0.0.1` não é o endereço correto para comunicação entre eles. Use o nome DNS do serviço na rede privada e ajuste o endereço de bind do Lavalink com controles de firewall apropriados.
