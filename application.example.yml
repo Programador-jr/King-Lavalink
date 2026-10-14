@@ -7,7 +7,7 @@ lavalink:
   server:
     password: "${LAVALINK_SERVER_PASSWORD:change-me-before-running}"
     sources:
-      # Source plugins will be configured and tested in a separate step.
+      # YouTube is provided by youtube-source plugin below, not the built-in source.
       youtube: false
       bandcamp: true
       soundcloud: true
@@ -30,8 +30,29 @@ lavalink:
       tremolo: true
       vibrato: true
       volume: true
+  plugins:
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.15.0"
+      snapshot: false
+
+plugins:
+  youtube:
+    enabled: true
+    allowSearch: true
+    allowDirectVideoIds: true
+    allowDirectPlaylistIds: true
+    clients:
+      - MUSIC
+      - ANDROID_VR
+      - WEB
+      - WEBEMBEDDED
+    # Community endpoint for initial testing only; it has no uptime guarantee.
+    # For production, deploy and use a private instance of yt-cipher.
+    remoteCipher:
+      url: "https://cipher.lavalink-harmonix.me/"
+      userAgent: "King-Lavalink"
 
 logging:
   level:
     root: INFO
     lavalink: INFO
+    dev.lavalink.youtube: INFO
