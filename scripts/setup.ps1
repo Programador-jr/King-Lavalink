@@ -8,19 +8,29 @@ $templatePath = Join-Path $root "application.example.yml"
 $version = "4.2.2"
 $downloadUrl = "https://github.com/lavalink-devs/Lavalink/releases/download/$version/Lavalink.jar"
 
-try {
-    $javaVersionOutput = (& java -version 2>&1 | Out-String)
-} catch {
-    throw "Java não foi encontrado. Instale Java 17 ou superior e abra um novo terminal."
+# Capture both stdout and stderr without relying on the PowerShell native-command error handling.
+$javaCommand = Get-Command java -ErrorAction SilentlyContinue
+if (-not $javaCommand) {
+    throw "Java não foi encontrado no PATH. Verifique a instalação do Java 17 ou superior."
 }
 
-if ($javaVersionOutput -notmatch 'version "([0-9]+)') {
+$javaVersionOutput = (& java -version 2>&1 | Out-String)
+if ($LASTEXITCODE -ne 0) {
+    throw "O comando java -version falhou. Saída: $javaVersionOutput"
+}
+
+# Supports both legacy output (java version "17...") and modern output (openjdk 25...).
+if ($javaVersionOutput -match '(?:version\s+")?(\d+)(?:\.\d+)*') {
+    $javaMajor = [int]$Matches[1]
+} else {
     throw "Não foi possível identificar a versão do Java. Saída: $javaVersionOutput"
 }
-$javaMajor = [int]$Matches[1]
+
 if ($javaMajor -lt 17) {
     throw "Java 17 ou superior é necessário. Versão detectada: $javaMajor"
 }
+
+Write-Host "Java detectado: versão $javaMajor"
 
 if (-not (Test-Path $jarPath)) {
     Write-Host "Baixando Lavalink $version..."
