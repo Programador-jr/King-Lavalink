@@ -6,54 +6,68 @@ Serviço Lavalink independente para desenvolvimento local e futura integração 
 
 - Executar o Lavalink localmente antes de contratar hospedagem.
 - Manter o serviço de áudio separado do bot Node.js.
-- Não versionar o binário `Lavalink.jar` nem segredos.
+- Baixar o binário oficial automaticamente com um script, sem versionar arquivos JAR.
 - Validar conectividade, autenticação e reprodução antes de migrar para produção.
 
 ## Requisitos
 
-- Java 17 ou superior; confira os requisitos da release escolhida.
-- Acesso ao terminal.
-- O repositório do bot King para configurar o cliente Lavalink posteriormente.
+- Java 17 ou superior.
+- Acesso à internet para baixar o binário oficial do Lavalink.
+- Windows PowerShell ou shell Bash.
 
-## Preparação local
+## Instalação local
 
-1. Baixe uma release estável do Lavalink v4: https://github.com/lavalink-devs/Lavalink/releases
-2. Coloque o arquivo baixado como `Lavalink.jar` na raiz deste projeto.
-3. Copie `application.example.yml` para `application.yml`.
-4. Defina a variável de ambiente `LAVALINK_SERVER_PASSWORD`.
-5. Inicie o serviço.
+Os scripts baixam a versão do Lavalink definida neles (atualmente **4.2.2**) da página oficial de releases, validam o Java, criam uma configuração local com senha aleatória e mantêm os arquivos privados fora do Git.
 
-### Windows PowerShell
+### Windows (PowerShell)
+
+Na raiz do repositório:
 
 ```powershell
-$env:LAVALINK_SERVER_PASSWORD = "substitua-por-uma-senha-local"
-java -jar Lavalink.jar
+.\scripts\setup.ps1
+.\scripts\start.ps1
 ```
 
 ### Linux/macOS
 
-```bash
-export LAVALINK_SERVER_PASSWORD='substitua-por-uma-senha-local'
-java -jar Lavalink.jar
-```
-
-O Lavalink lê `application.yml` da pasta de trabalho atual. Não publique a senha nem compartilhe o arquivo `application.yml`.
-
-## Verificação inicial
-
-Depois que o servidor iniciar, consulte a API local (substitua a senha):
+Na raiz do repositório:
 
 ```bash
-curl -H "Authorization: substitua-por-uma-senha-local" http://127.0.0.1:2333/version
+chmod +x scripts/setup.sh scripts/start.sh
+./scripts/setup.sh
+./scripts/start.sh
 ```
 
-Uma resposta com a versão indica que a API está acessível localmente. Isso não comprova, por si só, que uma fonte musical esteja configurada.
+O primeiro comando baixa `Lavalink.jar` e cria `application.yml`. O segundo inicia o serviço. O processo fica ativo no terminal; use `Ctrl+C` para encerrá-lo.
+
+## Verificar se iniciou
+
+Em outro terminal, consulte a API local. Substitua a senha pela definida em `application.yml`:
+
+```bash
+curl -H "Authorization: SUA_SENHA_LOCAL" http://127.0.0.1:2333/version
+```
+
+Uma resposta com a versão indica que a API está acessível. Isso ainda não comprova que as fontes musicais estejam funcionando.
 
 ## Fontes musicais
 
-A disponibilidade das fontes varia conforme versões, plugins e mudanças dos provedores. Não presumimos que YouTube ou SoundCloud funcionarão apenas porque o servidor iniciou. A escolha e os testes de plugins serão uma etapa separada.
+A disponibilidade das fontes depende de plugins, versões e mudanças dos provedores. A fonte nativa do YouTube está desativada na configuração inicial; o suporte ao YouTube será configurado e testado separadamente. Não presumimos que YouTube ou SoundCloud funcionarão apenas porque o servidor iniciou.
 
-## Estrutura inicial
+## Arquivos locais ignorados pelo Git
+
+- `Lavalink.jar`: binário baixado da release oficial.
+- `application.yml`: configuração com a senha local.
+- Logs e arquivos de runtime.
+
+## Segurança
+
+- A configuração inicial escuta apenas em `127.0.0.1`.
+- Não publique a senha nem o arquivo `application.yml`.
+- Não exponha a porta 2333 à internet sem planejar autenticação, firewall e transporte seguro.
+- A versão do Lavalink é fixada nos scripts para tornar o setup reproduzível; atualize-a conscientemente após revisar a release.
+
+## Estrutura
 
 ```text
 King-Lavalink/
@@ -61,13 +75,11 @@ King-Lavalink/
 ├── .gitignore
 ├── README.md
 ├── application.example.yml
-└── docs/
-    └── local-testing.md
+├── docs/
+│   └── local-testing.md
+└── scripts/
+    ├── setup.ps1
+    ├── start.ps1
+    ├── setup.sh
+    └── start.sh
 ```
-
-## Segurança
-
-- `application.yml` está ignorado pelo Git.
-- Use uma senha forte e exclusiva.
-- Mantenha o serviço vinculado apenas à interface local durante os testes.
-- Não exponha a porta 2333 à internet sem planejar autenticação, firewall e transporte seguro.
