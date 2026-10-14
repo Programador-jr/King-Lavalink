@@ -14,8 +14,13 @@ if (-not $javaCommand) {
     throw "Java não foi encontrado no PATH. Verifique a instalação do Java 17 ou superior."
 }
 
+$originalErrorAction = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
 $javaVersionOutput = (& java -version 2>&1 | Out-String)
-if ($LASTEXITCODE -ne 0) {
+$exitCode = $LASTEXITCODE
+$ErrorActionPreference = $originalErrorAction
+
+if ($exitCode -ne 0) {
     throw "O comando java -version falhou. Saída: $javaVersionOutput"
 }
 
