@@ -62,6 +62,26 @@ Depois de reiniciar o Lavalink, confira os logs para confirmar que o plugin YouT
 
 ## Integração local com o King
 
+A branch `dev` do repositório King aceita selecionar o nó local explicitamente sem modificar a lista de nós públicos:
+
+1. Inicie o Lavalink e confirme que `GET /version` funciona com a senha local.
+2. Na cópia local do King, adicione estas variáveis ao `.env` usando exatamente a senha presente em `application.yml`:
+
+   ```env
+   LAVALINK_LOCAL=true
+   LAVALINK_HOST=127.0.0.1
+   LAVALINK_PORT=2333
+   LAVALINK_SECURE=false
+   LAVALINK_PASSWORD=SENHA_GERADA_PELO_SETUP
+   ```
+
+3. Reinicie o bot. Com `LAVALINK_LOCAL=true`, ele ignora os nós de `botconfig/lavalink.json` e tenta somente `king-lavalink-local`. Sem essa opção, os nós públicos configurados continuam sendo usados como antes.
+4. Confirme nos logs que o node local conectou; em seguida teste busca/reprodução do YouTube e controles básicos.
+
+Se o bot e o Lavalink estiverem em contêineres diferentes, `127.0.0.1` não é o endereço correto para comunicação entre eles. Use o nome DNS do serviço na rede privada e ajuste o endereço de bind do Lavalink com controles de firewall apropriados.
+
+## Detalhes adicionais de integração local com o King
+
 O repositório do King contém uma lista de nós públicos em `botconfig/lavalink.json`. Para um teste local, a cópia local do bot precisa selecionar o Lavalink local em vez desses nós. Não use `127.0.0.1` como host se o bot estiver hospedado em outro computador/contêiner: esse endereço sempre aponta para o próprio ambiente do bot.
 
 A configuração do bot principal não é alterada por este repositório. Valide primeiro a reprodução local antes de mudar a configuração de produção.
