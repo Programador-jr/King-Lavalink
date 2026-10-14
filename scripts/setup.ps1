@@ -14,7 +14,7 @@ try {
     throw "Java não foi encontrado. Instale Java 17 ou superior e abra um novo terminal."
 }
 
-if ($javaVersionOutput -notmatch 'version "(d+)') {
+if ($javaVersionOutput -notmatch 'version "([0-9]+)') {
     throw "Não foi possível identificar a versão do Java. Saída: $javaVersionOutput"
 }
 $javaMajor = [int]$Matches[1]
@@ -39,12 +39,14 @@ if (-not (Test-Path $configPath)) {
     }
     $template = Get-Content $templatePath -Raw
     $bytes = New-Object byte[] 32
-    [System.Security.Cryptography.RandomNumberGenerator]::Fill($bytes)
+    $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
+    $rng.GetBytes($bytes)
+    $rng.Dispose()
     $password = [Convert]::ToBase64String($bytes).TrimEnd('=').Replace('+','-').Replace('/','_')
     $config = $template.Replace('${LAVALINK_SERVER_PASSWORD:change-me-before-running}', $password)
     Set-Content -Path $configPath -Value $config -Encoding utf8
     Write-Host "Configuração local criada: application.yml"
-    Write-Host "Senha local gerada automaticamente e guardada apenas em application.yml (ignorado pelo Git)."
+    Write-Host "Senha local aleatória guardada apenas em application.yml (ignorado pelo Git)."
 } else {
     Write-Host "application.yml já existe; mantendo sua configuração."
 }
