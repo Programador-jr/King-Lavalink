@@ -42,7 +42,7 @@ if [[ ! -f "$CONFIG" ]]; then
     exit 1
   fi
   PASSWORD="$(openssl rand -base64 32 | tr -d '=+/\n' | cut -c1-40)"
-  sed "s/\${LAVALINK_SERVER_PASSWORD:change-me-before-running}/$PASSWORD/" "$TEMPLATE" > "$CONFIG"
+  awk -v password="$PASSWORD" '{ gsub(/\$\{LAVALINK_SERVER_PASSWORD:change-me-before-running\}/, password); print }' "$TEMPLATE" > "$CONFIG"
   chmod 600 "$CONFIG"
   echo "application.yml criado com senha local aleatória (arquivo ignorado pelo Git)."
 else
