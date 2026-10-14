@@ -1,0 +1,37 @@
+server:
+  # Local-only during development. Do not expose publicly without a security plan.
+  address: 127.0.0.1
+  port: 2333
+
+lavalink:
+  server:
+    password: "${LAVALINK_SERVER_PASSWORD:change-me-before-running}"
+    sources:
+      # Source plugins will be configured and tested in a separate step.
+      youtube: false
+      bandcamp: true
+      soundcloud: true
+      twitch: true
+      vimeo: true
+      nico: false
+      http: true
+      local: false
+    bufferDurationMs: 400
+    frameBufferDurationMs: 5000
+    youtubePlaylistLoadLimit: 6
+    playerUpdateInterval: 5
+    filters:
+      channelMix: true
+      equalizer: true
+      karaoke: true
+      lowPass: true
+      rotation: true
+      timescale: true
+      tremolo: true
+      vibrato: true
+      volume: true
+
+logging:
+  level:
+    root: INFO
+    lavalink: INFO
