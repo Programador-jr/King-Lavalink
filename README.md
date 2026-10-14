@@ -40,6 +40,14 @@ chmod +x scripts/setup.sh scripts/start.sh
 
 O primeiro comando baixa `Lavalink.jar` e cria `application.yml`. O segundo inicia o serviço. O processo fica ativo no terminal; use `Ctrl+C` para encerrá-lo.
 
+## YouTube
+
+A configuração de exemplo instala o plugin oficial `youtube-source` **1.15.0**, mantém a fonte nativa do YouTube desativada e configura um resolvedor remoto de cipher para lidar com mudanças no script do player. A versão 1.15.0 adiciona suporte ao endpoint `/resolve_url` do resolvedor remoto.
+
+O endereço público configurado é comunitário e fornecido sem garantia de disponibilidade. Ele serve para diagnóstico local; para uso contínuo, implante uma instância privada do [yt-cipher](https://github.com/Sagexdd/yt-cipher) e substitua `plugins.youtube.remoteCipher.url` pela URL da sua instância.
+
+**Importante:** `setup.ps1` preserva um `application.yml` existente. Se você já executou o setup antes desta atualização, o arquivo local não será sobrescrito. Copie as seções `lavalink.plugins`, `plugins.youtube` e o nível de log `dev.lavalink.youtube` de `application.example.yml` para o seu `application.yml`, mantendo a senha atual e as configurações locais. Não crie duas chaves `lavalink:` ou `plugins:`; mescle as seções no mesmo bloco.
+
 ## Verificar se iniciou
 
 Em outro terminal, consulte a API local. Substitua a senha pela definida em `application.yml`:
@@ -50,9 +58,13 @@ curl -H "Authorization: SUA_SENHA_LOCAL" http://127.0.0.1:2333/version
 
 Uma resposta com a versão indica que a API está acessível. Isso ainda não comprova que as fontes musicais estejam funcionando.
 
-## Fontes musicais
+Depois de reiniciar o Lavalink, confira os logs para confirmar que o plugin YouTube foi carregado e que a mensagem de inicialização menciona o resolvedor remoto. Teste uma busca e uma faixa pública do YouTube.
 
-A disponibilidade das fontes depende de plugins, versões e mudanças dos provedores. A fonte nativa do YouTube está desativada na configuração inicial; o suporte ao YouTube será configurado e testado separadamente. Não presumimos que YouTube ou SoundCloud funcionarão apenas porque o servidor iniciou.
+## Integração local com o King
+
+O repositório do King contém uma lista de nós públicos em `botconfig/lavalink.json`. Para um teste local, a cópia local do bot precisa selecionar o Lavalink local em vez desses nós. Não use `127.0.0.1` como host se o bot estiver hospedado em outro computador/contêiner: esse endereço sempre aponta para o próprio ambiente do bot.
+
+A configuração do bot principal não é alterada por este repositório. Valide primeiro a reprodução local antes de mudar a configuração de produção.
 
 ## Arquivos locais ignorados pelo Git
 
