@@ -1,0 +1,21 @@
+# Lavalink binary (download separately)
+Lavalink.jar
+*.jar
+
+# Local secrets/configuration
+application.yml
+.env
+.env.*
+!.env.example
+
+# Logs and runtime data
+logs/
+*.log
+hs_err_pid*
+replay_pid*
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
