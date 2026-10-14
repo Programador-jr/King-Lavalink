@@ -80,12 +80,6 @@ A branch `dev` do repositório King aceita selecionar o nó local explicitamente
 
 Se o bot e o Lavalink estiverem em contêineres diferentes, `127.0.0.1` não é o endereço correto para comunicação entre eles. Use o nome DNS do serviço na rede privada e ajuste o endereço de bind do Lavalink com controles de firewall apropriados.
 
-## Detalhes adicionais de integração local com o King
-
-O repositório do King contém uma lista de nós públicos em `botconfig/lavalink.json`. Para um teste local, a cópia local do bot precisa selecionar o Lavalink local em vez desses nós. Não use `127.0.0.1` como host se o bot estiver hospedado em outro computador/contêiner: esse endereço sempre aponta para o próprio ambiente do bot.
-
-A configuração do bot principal não é alterada por este repositório. Valide primeiro a reprodução local antes de mudar a configuração de produção.
-
 ## Arquivos locais ignorados pelo Git
 
 - `Lavalink.jar`: binário baixado da release oficial.
