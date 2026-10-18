@@ -32,7 +32,7 @@ lavalink:
       vibrato: true
       volume: true
   plugins:
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.15.0"
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.2"
       snapshot: false
 
 plugins:
