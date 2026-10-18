@@ -46,9 +46,10 @@ plugins:
       - ANDROID_VR
       - WEB
       - WEBEMBEDDED
-    # Não fixe um serviço comunitário de cipher aqui: endpoints públicos podem ficar
-    # indisponíveis sem aviso. Para uso confiável, configure uma instância própria
-    # de yt-cipher e adicione remoteCipher.url/password conforme sua implantação.
+    # Instância pública mantida pelo projeto yt-cipher; para produção, prefira hospedar a sua.
+    remoteCipher:
+      url: "https://cipher.kikkia.dev/"
+      userAgent: "King-Lavalink"
 
 logging:
   level:
