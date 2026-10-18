@@ -44,6 +44,18 @@ O primeiro comando baixa `Lavalink.jar` e cria `application.yml`. O segundo inic
 
 A configuração de exemplo instala o plugin oficial `youtube-source` **1.18.2**, mantém a fonte nativa do YouTube desativada, ativa `MUSIC`, `TV`, `ANDROID_VR`, `WEB` e `WEBEMBEDDED`, habilita OAuth para o cliente `TV` e configura o resolvedor remoto `https://cipher.kikkia.dev/`.
 
+### Workaround experimental para `TVHTML5: The page needs to be reloaded`
+
+A versão `youtube-source 1.18.2` pode falhar no cliente `TVHTML5` por causa do User-Agent utilizado. Há uma investigação upstream reproduzindo o erro e relatando sucesso com um User-Agent de PlayStation 4 ([issue #226](https://github.com/lavalink-devs/youtube-source/issues/226)). O workaround é experimental e não é uma correção oficial.
+
+Para gerar um JAR personalizado sem modificar a instalação ativa, execute:
+
+```powershell
+.\scripts\build-youtube-plugin-patched.ps1
+```
+
+O script exige Git e JDK 17+, aplica o patch de `patches/youtube-source-1.18.2-tv-user-agent.patch` à tag oficial e executa o build/testes Gradle. Leia [o procedimento de compilação, instalação e reversão](docs/youtube-tv-user-agent-fix.md) antes de instalar. Um build aprovado não comprova, por si só, que o YouTube permitirá a reprodução; é necessário testar várias faixas no Lavalink local.
+
 ### Erro "This video requires login" em todas as músicas
 
 Esse erro pode indicar que o YouTube está bloqueando solicitações sem autenticação, por exemplo devido ao IP de saída do servidor. O endpoint `remoteCipher` decodifica assinaturas, mas não autentica a sessão no YouTube. O template habilita o OAuth oficial do `youtube-source` e o cliente `TV`, que requer autenticação.
