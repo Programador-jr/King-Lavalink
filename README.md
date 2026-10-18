@@ -42,12 +42,11 @@ O primeiro comando baixa `Lavalink.jar` e cria `application.yml`. O segundo inic
 
 ## YouTube
 
-A configuração de exemplo instala o plugin oficial `youtube-source` **1.15.0**, mantém a fonte nativa do YouTube desativada e configura um resolvedor remoto de cipher para lidar com mudanças no script do player. A versão 1.15.0 adiciona suporte ao endpoint `/resolve_url` do resolvedor remoto.
+A configuração de exemplo instala o plugin oficial `youtube-source` **1.18.2**, mantém a fonte nativa do YouTube desativada e ativa os clientes InnerTube `MUSIC`, `ANDROID_VR`, `WEB` e `WEBEMBEDDED`.
 
-O endereço público configurado é comunitário e fornecido sem garantia de disponibilidade. Ele serve para diagnóstico local; para uso contínuo, implante uma instância privada do [yt-cipher](https://github.com/Sagexdd/yt-cipher) e substitua `plugins.youtube.remoteCipher.url` pela URL da sua instância.
+O resolvedor remoto de cipher não aponta para um serviço público conhecido por ficar indisponível. O plugin pode resolver algumas faixas sem esse serviço, mas as mudanças frequentes nos scripts do YouTube podem interromper a extração de áudio. Para uso confiável, implante sua própria instância do [yt-cipher](https://github.com/kikkia/yt-cipher) e configure `plugins.youtube.remoteCipher.url` (e `password`, se habilitada na instância) no `application.yml`. Não invente uma URL: use o endereço real do serviço que você implantou.
 
-**Importante:** `setup.ps1` preserva um `application.yml` existente. Se você já executou o setup antes desta atualização, o arquivo local não será sobrescrito. Copie as seções `lavalink.plugins`, `plugins.youtube` e o nível de log `dev.lavalink.youtube` de `application.example.yml` para o seu `application.yml`, mantendo a senha atual e as configurações locais. Não crie duas chaves `lavalink:` ou `plugins:`; mescle as seções no mesmo bloco.
-
+**Importante:** `setup.ps1` e `setup.sh` preservam um `application.yml` existente. Se você já executou o setup antes desta atualização, o arquivo local não será sobrescrito. Compare-o com `application.example.yml`, preserve a senha local e atualize a versão do plugin. Não crie duas chaves `lavalink:` ou `plugins:`; mescle as seções no mesmo bloco.
 ## Verificar se iniciou
 
 Em outro terminal, consulte a API local. Substitua a senha pela definida em `application.yml`:
