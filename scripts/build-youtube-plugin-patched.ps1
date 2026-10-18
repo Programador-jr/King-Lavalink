@@ -4,12 +4,11 @@ $ErrorActionPreference = "Stop"
 
 $sourceTag = "1.18.2"
 $sourceUrl = "https://github.com/lavalink-devs/youtube-source.git"
+$repoRoot = Split-Path -Parent $PSScriptRoot
+$patchFile = Join-Path $repoRoot "patches/youtube-source-1.18.2-tv-user-agent.patch"
 $workRoot = Join-Path $env:TEMP ("king-youtube-source-" + [guid]::NewGuid().ToString("N"))
 $sourceDir = Join-Path $workRoot "youtube-source"
-$distDir = Join-Path (Split-Path -Parent $PSScriptRoot) "dist"
-$sourceFile = Join-Path $sourceDir "common/src/main/java/dev/lavalink/youtube/clients/Tv.java"
-$oldUserAgent = '.withUserAgent("Mozilla/5.0 (ChromiumStylePlatform) Cobalt/Version")'
-$newUserAgent = '.withUserAgent("Mozilla/5.0 (PlayStation; PlayStation 4/12.00) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Safari/605.1.15")'
+$distDir = Join-Path $repoRoot "dist"
 
 try {
     if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
@@ -17,6 +16,9 @@ try {
     }
     if (-not (Get-Command java -ErrorAction SilentlyContinue)) {
         throw "Java não foi encontrado no PATH. Instale um JDK 17 ou superior."
+    }
+    if (-not (Test-Path -LiteralPath $patchFile)) {
+        throw "Arquivo de patch não encontrado: $patchFile"
     }
 
     $javaVersion = (& java -version 2>&1 | Out-String)
@@ -28,17 +30,15 @@ try {
     git clone --depth 1 --branch $sourceTag $sourceUrl $sourceDir
     if ($LASTEXITCODE -ne 0) { throw "Falha ao clonar youtube-source tag $sourceTag." }
 
-    $source = Get-Content -LiteralPath $sourceFile -Raw
-    $occurrences = ([regex]::Matches($source, [regex]::Escape($oldUserAgent))).Count
-    if ($occurrences -ne 1) {
-        throw "O código-fonte não corresponde ao esperado: User-Agent original encontrado $occurrences vez(es). Nenhuma alteração foi aplicada."
-    }
-
-    $source = $source.Replace($oldUserAgent, $newUserAgent)
-    Set-Content -LiteralPath $sourceFile -Value $source -Encoding utf8NoBOM
-
     Push-Location $sourceDir
     try {
+        git apply --check $patchFile
+        if ($LASTEXITCODE -ne 0) {
+            throw "O patch não se aplica à tag $sourceTag. Nenhum JAR foi gerado."
+        }
+        git apply $patchFile
+        if ($LASTEXITCODE -ne 0) { throw "Falha ao aplicar o patch." }
+
         & .\gradlew.bat :plugin:build
         if ($LASTEXITCODE -ne 0) { throw "Build/testes do plugin falharam." }
     }
