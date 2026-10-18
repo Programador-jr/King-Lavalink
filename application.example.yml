@@ -43,9 +43,16 @@ plugins:
     allowDirectPlaylistIds: true
     clients:
       - MUSIC
+      # TV supports OAuth and can help when YouTube flags all unauthenticated clients.
+      - TV
       - ANDROID_VR
       - WEB
       - WEBEMBEDDED
+    oauth:
+      enabled: true
+      # Optional: set a refresh token after completing the OAuth flow once.
+      # Keep credentials out of Git and use a dedicated burner account, not your primary account.
+      # refreshToken: "${YOUTUBE_OAUTH_REFRESH_TOKEN}"
     # Instância pública mantida pelo projeto yt-cipher; para produção, prefira hospedar a sua.
     remoteCipher:
       url: "https://cipher.kikkia.dev/"
@@ -56,3 +63,4 @@ logging:
     root: INFO
     lavalink: INFO
     dev.lavalink.youtube: INFO
+    dev.lavalink.youtube.http.YoutubeOauth2Handler: INFO
