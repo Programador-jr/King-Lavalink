@@ -20,6 +20,7 @@ lavalink:
     frameBufferDurationMs: 5000
     youtubePlaylistLoadLimit: 6
     playerUpdateInterval: 5
+    trackStuckThresholdMs: 10000
     filters:
       channelMix: true
       equalizer: true
@@ -45,11 +46,9 @@ plugins:
       - ANDROID_VR
       - WEB
       - WEBEMBEDDED
-    # Community endpoint for initial testing only; it has no uptime guarantee.
-    # For production, deploy and use a private instance of yt-cipher.
-    remoteCipher:
-      url: "https://cipher.lavalink-harmonix.me/"
-      userAgent: "King-Lavalink"
+    # Não fixe um serviço comunitário de cipher aqui: endpoints públicos podem ficar
+    # indisponíveis sem aviso. Para uso confiável, configure uma instância própria
+    # de yt-cipher e adicione remoteCipher.url/password conforme sua implantação.
 
 logging:
   level:
