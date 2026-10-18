@@ -11,15 +11,15 @@
 
 ## 2. Configuração YouTube
 
-- [ ] Confirmar que `lavalink.plugins` declara `dev.lavalink.youtube:youtube-plugin:1.15.0` com `snapshot: false`.
+- [ ] Confirmar que `lavalink.plugins` declara `dev.lavalink.youtube:youtube-plugin:1.18.2` com `snapshot: false`.
 - [ ] Confirmar que `lavalink.server.sources.youtube` continua como `false`.
 - [ ] Confirmar que `plugins.youtube.enabled` está como `true`.
-- [ ] Confirmar que `plugins.youtube.remoteCipher.url` aponta para o serviço de cipher escolhido.
+- [ ] Não configurar endpoints comunitários sem verificar disponibilidade. Para uso contínuo, configurar `plugins.youtube.remoteCipher.url` com a URL real de uma instância própria de yt-cipher.
 - [ ] Reiniciar Lavalink e confirmar nos logs que o plugin foi baixado/carregado sem erro.
-- [ ] Confirmar nos logs que o resolvedor remoto foi ativado.
+- [ ] Se uma instância própria de yt-cipher estiver configurada, confirmar nos logs que o resolvedor remoto foi ativado.
 - [ ] Testar uma busca YouTube e reproduzir uma faixa pública.
 
-A URL comunitária de exemplo não tem garantia de disponibilidade. Se o serviço remoto falhar, configure uma instância privada de yt-cipher e atualize a URL.
+O template não fixa um endpoint público de cipher porque ele pode ficar indisponível sem aviso. Sem cipher remoto, a reprodução pode funcionar para algumas faixas, mas não há garantia de compatibilidade duradoura com as mudanças do YouTube.
 
 ## 3. Inicialização e autenticação
 
