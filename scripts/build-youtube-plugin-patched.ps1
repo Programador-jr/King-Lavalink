@@ -21,7 +21,12 @@ try {
         throw "Arquivo de patch não encontrado: $patchFile"
     }
 
-    $javaVersion = (& java -version 2>&1 | Out-String)
+    # java -version writes to stderr. Redirect it inside cmd.exe so PowerShell
+    # does not convert the expected version output into a NativeCommandError.
+    $javaVersion = (& $env:ComSpec /d /c "java -version 2>&1" | Out-String)
+    if ($LASTEXITCODE -ne 0) {
+        throw "Não foi possível executar java -version. Verifique a instalação do Java e o PATH."
+    }
     if ($javaVersion -notmatch 'version "(?:1[7-9]|[2-9][0-9])\.') {
         throw "É necessário JDK 17 ou superior. Versão detectada: $javaVersion"
     }
