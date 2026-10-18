@@ -40,6 +40,9 @@ jobs:
           youtube = config["plugins"]["youtube"]
           assert youtube["enabled"] is True
           assert youtube["remoteCipher"]["url"] == "https://cipher.kikkia.dev/"
+          assert "TV" in youtube["clients"]
+          assert youtube["oauth"]["enabled"] is True
+          assert "dev.lavalink.youtube.http.YoutubeOauth2Handler" in config["logging"]["level"]
           assert "cipher.lavalink-harmonix.me" not in path.read_text(encoding="utf-8")
-          print("application.example.yml: YAML válido; Lavalink, YouTube source e cipher configurados.")
+          print("application.example.yml: YAML válido; Lavalink, YouTube source, OAuth e cipher configurados.")
           PY
