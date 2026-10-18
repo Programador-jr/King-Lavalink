@@ -15,11 +15,16 @@
 - [ ] Confirmar que `lavalink.server.sources.youtube` continua como `false`.
 - [ ] Confirmar que `plugins.youtube.enabled` está como `true`.
 - [ ] Confirmar que `plugins.youtube.remoteCipher.url` aponta para `https://cipher.kikkia.dev/` ou para uma instância própria de yt-cipher.
+- [ ] Confirmar que `TV` está na lista de clientes e `plugins.youtube.oauth.enabled` está como `true`.
 - [ ] Reiniciar Lavalink e confirmar nos logs que o plugin foi baixado/carregado sem erro.
+- [ ] Se solicitado, concluir o fluxo OAuth com uma conta dedicada de teste (não a conta principal) e guardar o refresh token somente na configuração local/segredo de hospedagem.
+- [ ] Confirmar nos logs que o OAuth foi autorizado e o token foi atualizado antes de testar a reprodução.
 - [ ] Se uma instância própria de yt-cipher estiver configurada, confirmar nos logs que o resolvedor remoto foi ativado.
 - [ ] Testar uma busca YouTube e reproduzir uma faixa pública.
 
 O template usa a instância pública mantida pelo projeto yt-cipher (`https://cipher.kikkia.dev/`), sem garantia de disponibilidade contínua. Para produção, prefira hospedar uma instância própria. Não use o endpoint anterior `cipher.lavalink-harmonix.me`, que apresentou erro de implantação pausada.
+
+O cipher não resolve erros `This video requires login`: para isso, o template habilita OAuth e o cliente `TV`. O plugin alerta que autenticação pode causar rate limits ou encerramento da conta. Use uma conta dedicada de teste, nunca a conta principal, e não compartilhe nem versione o refresh token.
 
 ## 3. Inicialização e autenticação
 
