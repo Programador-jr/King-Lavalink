@@ -1,7 +1,7 @@
 diff --git a/common/src/main/java/dev/lavalink/youtube/clients/Tv.java b/common/src/main/java/dev/lavalink/youtube/clients/Tv.java
 --- a/common/src/main/java/dev/lavalink/youtube/clients/Tv.java
 +++ b/common/src/main/java/dev/lavalink/youtube/clients/Tv.java
-@@ -17,7 +17,7 @@ public class Tv extends StreamingNonMusicClient {
+@@ -17,4 +17,4 @@ public class Tv extends StreamingNonMusicClient {
      public static ClientConfig BASE_CONFIG = new ClientConfig()
          .withClientName("TVHTML5")
 -        .withUserAgent("Mozilla/5.0 (ChromiumStylePlatform) Cobalt/Version")
