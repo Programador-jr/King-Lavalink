@@ -14,12 +14,12 @@
 - [ ] Confirmar que `lavalink.plugins` declara `dev.lavalink.youtube:youtube-plugin:1.18.2` com `snapshot: false`.
 - [ ] Confirmar que `lavalink.server.sources.youtube` continua como `false`.
 - [ ] Confirmar que `plugins.youtube.enabled` está como `true`.
-- [ ] Não configurar endpoints comunitários sem verificar disponibilidade. Para uso contínuo, configurar `plugins.youtube.remoteCipher.url` com a URL real de uma instância própria de yt-cipher.
+- [ ] Confirmar que `plugins.youtube.remoteCipher.url` aponta para `https://cipher.kikkia.dev/` ou para uma instância própria de yt-cipher.
 - [ ] Reiniciar Lavalink e confirmar nos logs que o plugin foi baixado/carregado sem erro.
 - [ ] Se uma instância própria de yt-cipher estiver configurada, confirmar nos logs que o resolvedor remoto foi ativado.
 - [ ] Testar uma busca YouTube e reproduzir uma faixa pública.
 
-O template não fixa um endpoint público de cipher porque ele pode ficar indisponível sem aviso. Sem cipher remoto, a reprodução pode funcionar para algumas faixas, mas não há garantia de compatibilidade duradoura com as mudanças do YouTube.
+O template usa a instância pública mantida pelo projeto yt-cipher (`https://cipher.kikkia.dev/`), sem garantia de disponibilidade contínua. Para produção, prefira hospedar uma instância própria. Não use o endpoint anterior `cipher.lavalink-harmonix.me`, que apresentou erro de implantação pausada.
 
 ## 3. Inicialização e autenticação
 
