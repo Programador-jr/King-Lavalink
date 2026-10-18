@@ -42,7 +42,18 @@ O primeiro comando baixa `Lavalink.jar` e cria `application.yml`. O segundo inic
 
 ## YouTube
 
-A configuração de exemplo instala o plugin oficial `youtube-source` **1.18.2**, mantém a fonte nativa do YouTube desativada, ativa os clientes InnerTube `MUSIC`, `ANDROID_VR`, `WEB` e `WEBEMBEDDED` e configura o resolvedor remoto oficial `https://cipher.kikkia.dev/`.
+A configuração de exemplo instala o plugin oficial `youtube-source` **1.18.2**, mantém a fonte nativa do YouTube desativada, ativa `MUSIC`, `TV`, `ANDROID_VR`, `WEB` e `WEBEMBEDDED`, habilita OAuth para o cliente `TV` e configura o resolvedor remoto `https://cipher.kikkia.dev/`.
+
+### Erro "This video requires login" em todas as músicas
+
+Esse erro pode indicar que o YouTube está bloqueando solicitações sem autenticação, por exemplo devido ao IP de saída do servidor. O endpoint `remoteCipher` decodifica assinaturas, mas não autentica a sessão no YouTube. O template habilita o OAuth oficial do `youtube-source` e o cliente `TV`, que requer autenticação.
+
+1. Reinicie o Lavalink e acompanhe o terminal/logs. Na primeira inicialização sem token, o plugin deverá iniciar o fluxo oficial de autorização e mostrar instruções/código.
+2. Conclua o fluxo com uma **conta Google/YouTube dedicada de teste (burner)**, não sua conta principal. O projeto `youtube-source` alerta que OAuth pode causar limitação de requisições ou até encerramento da conta; não é uma garantia de funcionamento.
+3. Após a autorização, copie o refresh token mostrado no log para o arquivo local `application.yml` (não o commite nem o compartilhe). Opcionalmente, injete-o por variável de ambiente conforme o ambiente de hospedagem; não coloque tokens reais no repositório.
+4. Reinicie o Lavalink e confirme nos logs que o token foi obtido/atualizado. Teste uma faixa pública.
+
+Se o serviço roda em hospedagem sem terminal interativo, veja se os logs exibem o código de autorização e conclua o fluxo pelo método indicado. Se o plugin continuar falhando, envie os logs completos desde a inicialização do YouTube até a primeira tentativa de reprodução, removendo tokens e códigos privados. OAuth não corrige bugs de assinatura nem bloqueios de rede por si só.
 
 A instância pública é mantida pelo projeto [yt-cipher](https://github.com/kikkia/yt-cipher), mas não tem garantia de disponibilidade contínua. Para produção, hospede sua própria instância e substitua a URL e, se configurada, a senha do serviço no `application.yml`. Não use o endpoint comunitário anterior `cipher.lavalink-harmonix.me`, que já apresentou erro de implantação pausada.
 
