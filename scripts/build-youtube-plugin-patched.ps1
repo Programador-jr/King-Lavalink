@@ -51,16 +51,29 @@ try {
         Pop-Location
     }
 
-    $jar = Join-Path $sourceDir "plugin/build/libs/youtube-plugin-$sourceTag.jar"
-    if (-not (Test-Path -LiteralPath $jar)) {
-        throw "Build concluído, mas o JAR esperado não foi encontrado: $jar"
+    # The upstream build derives its version from Git state. Applying our patch
+    # makes the checkout dirty, so the resulting JAR name may not be 1.18.2.
+    # Discover the actual plugin artifact rather than assuming a fixed filename.
+    $libsDir = Join-Path $sourceDir "plugin/build/libs"
+    $jars = @(
+        Get-ChildItem -LiteralPath $libsDir -Filter "youtube-plugin-*.jar" -File |
+            Where-Object { $_.Name -notmatch '-(sources|javadoc)\.jar$' }
+    )
+    if ($jars.Count -eq 0) {
+        throw "Build executado, mas nenhum JAR youtube-plugin-*.jar foi encontrado em: $libsDir"
     }
+    if ($jars.Count -gt 1) {
+        $jarList = ($jars | ForEach-Object { $_.Name }) -join ", "
+        throw "Mais de um JAR de plugin encontrado; não é seguro escolher automaticamente: $jarList"
+    }
+    $jar = $jars[0].FullName
 
     New-Item -ItemType Directory -Path $distDir -Force | Out-Null
     $output = Join-Path $distDir "youtube-plugin-$sourceTag-king-tv-ua.jar"
     Copy-Item -LiteralPath $jar -Destination $output -Force
     Write-Host ""
-    Write-Host "Build e testes concluídos. JAR personalizado: $output"
+    Write-Host "Build e testes concluídos. Artefato de origem: $jar"
+    Write-Host "JAR personalizado: $output"
     Write-Host "O Lavalink ativo não foi modificado. Leia docs/youtube-tv-user-agent-fix.md antes de instalar o JAR."
 }
 finally {
