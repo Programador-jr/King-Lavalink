@@ -1,0 +1,45 @@
+name: Validate Lavalink configuration
+
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+
+jobs:
+  validate-config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install YAML parser
+        run: python -m pip install --disable-pip-version-check PyYAML
+
+      - name: Validate application.example.yml
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import yaml
+
+          path = Path("application.example.yml")
+          config = yaml.safe_load(path.read_text(encoding="utf-8"))
+
+          assert config["server"]["address"] == "127.0.0.1"
+          assert config["server"]["port"] == 2333
+          server = config["lavalink"]["server"]
+          assert server["sources"]["youtube"] is False
+          assert server["password"].startswith("${LAVALINK_SERVER_PASSWORD:")
+          plugin = config["lavalink"]["plugins"][0]["dependency"]
+          assert plugin == "dev.lavalink.youtube:youtube-plugin:1.18.2"
+          youtube = config["plugins"]["youtube"]
+          assert youtube["enabled"] is True
+          assert youtube["remoteCipher"]["url"] == "https://cipher.kikkia.dev/"
+          assert "cipher.lavalink-harmonix.me" not in path.read_text(encoding="utf-8")
+          print("application.example.yml: YAML válido; Lavalink, YouTube source e cipher configurados.")
+          PY
