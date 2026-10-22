@@ -9,6 +9,7 @@ application.yml
 !.env.example
 
 # Logs and runtime data
+dist/
 logs/
 *.log
 hs_err_pid*
