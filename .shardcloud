@@ -1,5 +1,0 @@
-﻿DISPLAY_NAME=King Lavalink
-DESCRIPTION=Lavalink music server for King
-MAIN=Lavalink.jar
-MEMORY=1024
-VERSION=recommended
