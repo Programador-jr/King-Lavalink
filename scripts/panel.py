@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import base64
+import hmac
 import http.client
 import json
 import os
@@ -86,6 +88,12 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         route = urlsplit(self.path).path
+        if route in {"/", "/api/status", "/api/logs", "/api/history"} and not self._authorized():
+            self.send_response(401)
+            self.send_header("WWW-Authenticate", 'Basic realm="King Lavalink Panel", charset="UTF-8"')
+            self.send_header("Content-Length", "0")
+            self.end_headers()
+            return
         if route == "/":
             self._respond(200, PAGE.encode("utf-8"), "text/html; charset=utf-8")
         elif route == "/api/status":
@@ -125,6 +133,21 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_HEAD(self):
         self._proxy_http()
+
+    def _authorized(self):
+        expected_user = os.environ.get("PANEL_USERNAME", "admin")
+        expected_password = os.environ.get("PANEL_PASSWORD") or os.environ.get("LAVALINK_SERVER_PASSWORD") or os.environ.get("LAVALINK_PASSWORD")
+        if not expected_password:
+            return False
+        value = self.headers.get("Authorization", "")
+        if not value.startswith("Basic "):
+            return False
+        try:
+            decoded = base64.b64decode(value[6:], validate=True).decode("utf-8")
+            username, password = decoded.split(":", 1)
+        except (ValueError, UnicodeDecodeError):
+            return False
+        return hmac.compare_digest(username, expected_user) and hmac.compare_digest(password, expected_password)
 
     def _respond(self, status, body, content_type):
         self.send_response(status)
