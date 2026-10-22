@@ -48,6 +48,19 @@ O endereço público configurado é comunitário e fornecido sem garantia de dis
 
 **Importante:** `setup.ps1` preserva um `application.yml` existente. Se você já executou o setup antes desta atualização, o arquivo local não será sobrescrito. Copie as seções `lavalink.plugins`, `plugins.youtube` e o nível de log `dev.lavalink.youtube` de `application.example.yml` para o seu `application.yml`, mantendo a senha atual e as configurações locais. Não crie duas chaves `lavalink:` ou `plugins:`; mescle as seções no mesmo bloco.
 
+## Deploy Java na ShardCloud
+
+O Lavalink é um serviço Java executado pelo JAR oficial. A configuração `.shardcloud` seleciona o runtime Java, inicia `Lavalink.jar`, reserva 1 GB de memória e define `VERSION=recommended`. A configuração de produção em `application.shardcloud.yml` escuta na porta 80 e baixa o plugin oficial `youtube-source` na inicialização.
+
+Para gerar o ZIP pronto para upload (o JAR não é versionado pelo Git):
+
+```powershell
+.\scripts\package-shardcloud.ps1
+```
+
+No painel ShardCloud, crie uma aplicação com runtime Java e envie `dist/king-lavalink-shardcloud.zip`. Defina a variável secreta `LAVALINK_SERVER_PASSWORD` antes do deploy. O endereço público fornecido pela plataforma usa a porta 443 com TLS/WebSocket seguro (`wss`); informe esse host, a senha e conexão segura no bot.
+
+O pacote contém apenas o JAR oficial, a configuração de produção e `.shardcloud`; não inclui `.env`, `application.yml` local nem credenciais. Para OAuth do YouTube, configure o token como segredo separado e referencie-o apenas se concluir o fluxo.
 ## Verificar se iniciou
 
 Em outro terminal, consulte a API local. Substitua a senha pela definida em `application.yml`:
