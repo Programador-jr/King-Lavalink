@@ -36,10 +36,15 @@ public final class KingLauncher {
         try (ServerSocket server = new ServerSocket()) {
             server.setReuseAddress(true);
             server.bind(new InetSocketAddress("0.0.0.0", PANEL_PORT));
-            while (lavalink.isAlive()) CLIENTS.submit(() -> {
-                try { Socket client = server.accept(); CLIENTS.submit(() -> handle(client)); }
-                catch (IOException e) { if (lavalink.isAlive()) System.err.println("Accept failed: " + e.getMessage()); }
-            });
+            server.setSoTimeout(1000);
+            while (lavalink.isAlive()) {
+                try {
+                    Socket client = server.accept();
+                    CLIENTS.submit(() -> handle(client));
+                } catch (SocketTimeoutException ignored) {
+                    // Periodically check whether the Lavalink child process is still alive.
+                }
+            }
         } finally { if (lavalink.isAlive()) lavalink.destroy(); }
         throw new IllegalStateException("Lavalink exited with code " + lavalink.waitFor());
     }
