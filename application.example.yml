@@ -52,6 +52,8 @@ plugins:
       userAgent: "King-Lavalink"
 
 logging:
+  file:
+    name: logs/lavalink.log
   level:
     root: INFO
     lavalink: INFO

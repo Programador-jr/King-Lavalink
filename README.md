@@ -40,6 +40,18 @@ chmod +x scripts/setup.sh scripts/start.sh
 
 O primeiro comando baixa `Lavalink.jar` e cria `application.yml`. O segundo inicia o serviço. O processo fica ativo no terminal; use `Ctrl+C` para encerrá-lo.
 
+## Painel web de logs e conexões
+
+Com o Lavalink iniciado, abra outro terminal e execute:
+
+```powershell
+.\scripts\panel.ps1
+```
+
+No Linux/macOS, execute `./scripts/panel.sh`. Abra [http://127.0.0.1:8080](http://127.0.0.1:8080) e navegue pelas páginas Visão geral, Conexões e Logs. O painel mostra players conectados, reprodução, CPU, memória, logs recentes com rolagem e histórico de conexões. Ele usa apenas Python 3 e a biblioteca padrão e registra um snapshot a cada atualização enquanto estiver aberto em `logs/connections.jsonl`.
+
+O painel lê a senha de `application.yml` ou das variáveis `LAVALINK_SERVER_PASSWORD` / `LAVALINK_PASSWORD`. O serviço web fica vinculado a `127.0.0.1`; mantenha-o local. A configuração de exemplo grava os logs do Lavalink em `logs/lavalink.log`. Se seu `application.yml` foi criado antes dessa opção, adicione o bloco `logging.file.name: logs/lavalink.log` (sob `logging`, antes de `level`) e reinicie o Lavalink. Para alterar a porta do painel, defina `PANEL_PORT` antes de iniciá-lo.
+
 ## YouTube
 
 A configuração de exemplo instala o plugin oficial `youtube-source` **1.15.0**, mantém a fonte nativa do YouTube desativada e configura um resolvedor remoto de cipher para lidar com mudanças no script do player. A versão 1.15.0 adiciona suporte ao endpoint `/resolve_url` do resolvedor remoto.
