@@ -1,5 +1,5 @@
 # Lavalink binary (download separately)
-*.jar
+
 
 # Local secrets/configuration
 application.yml
