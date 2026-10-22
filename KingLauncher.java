@@ -28,7 +28,10 @@ public final class KingLauncher {
         Files.createDirectories(ROOT.resolve("logs"));
         String java = Path.of(System.getProperty("java.home"), "bin", "java").toString();
         lavalink = new ProcessBuilder(java, "-Xms128m", "-Xmx512m", "-jar", jar.toString(),
-            "--spring.config.location=file:" + config, "--server.address=127.0.0.1", "--server.port=" + LL_PORT)
+            "--spring.config.location=file:" + config,
+            "--spring.cloud.config.enabled=false",
+            "--spring.cloud.config.import-check.enabled=false",
+            "--server.address=127.0.0.1", "--server.port=" + LL_PORT)
             .directory(ROOT.toFile()).inheritIO().start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> { if (lavalink != null && lavalink.isAlive()) lavalink.destroy(); CLIENTS.shutdownNow(); }));
         System.out.println("King dashboard: 0.0.0.0:" + PANEL_PORT);
