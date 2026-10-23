@@ -54,7 +54,9 @@ O painel lê a senha de `application.yml` ou das variáveis `LAVALINK_SERVER_PAS
 
 ## YouTube
 
-A configuração de exemplo instala o plugin oficial `youtube-source` **1.15.0**, mantém a fonte nativa do YouTube desativada e configura um resolvedor remoto de cipher para lidar com mudanças no script do player. A versão 1.15.0 adiciona suporte ao endpoint `/resolve_url` do resolvedor remoto.
+A configuração mantém a fonte nativa do YouTube desativada e carrega o plugin `youtube-source` 1.18.2 por JAR. O campo Maven `lavalink.plugins` fica vazio para evitar carregar o plugin oficial junto com o JAR customizado.
+
+O workaround experimental de User-Agent do cliente `TVHTML5` já está descrito em [docs/youtube-tv-user-agent-fix.md](docs/youtube-tv-user-agent-fix.md). Para compilar o JAR customizado manualmente, execute `.\scripts\build-youtube-plugin-patched.ps1`; no uso local, copie o artefato gerado para a pasta `plugins` ao lado do `Lavalink.jar`.
 
 O endereço público configurado é comunitário e fornecido sem garantia de disponibilidade. Ele serve para diagnóstico local; para uso contínuo, implante uma instância privada do [yt-cipher](https://github.com/Sagexdd/yt-cipher) e substitua `plugins.youtube.remoteCipher.url` pela URL da sua instância.
 
@@ -62,7 +64,7 @@ O endereço público configurado é comunitário e fornecido sem garantia de dis
 
 ## Deploy na ShardCloud
 
-Use o runtime Java da ShardCloud. O arquivo `.shardcloud` aponta para `king-lavalink-launcher.jar`, um inicializador Java puro que baixa e executa o JAR oficial do Lavalink e serve o painel no mesmo processo. O Lavalink escuta apenas em `127.0.0.1:2333`; o inicializador atende em `0.0.0.0:80`, serve a interface em `/` e encaminha as rotas `/v3`, `/v4` e `/version`, incluindo WebSocket, para o Lavalink. Painel e API usam a mesma URL HTTPS. A configuração de produção baixa o plugin oficial `youtube-source` na inicialização do Lavalink.
+Use o runtime Java da ShardCloud. O arquivo `.shardcloud` aponta para `king-lavalink-launcher.jar`, um inicializador Java puro que baixa e executa o JAR oficial do Lavalink e serve o painel no mesmo processo. O Lavalink escuta apenas em `127.0.0.1:2333`; o inicializador atende em `0.0.0.0:80`, serve a interface em `/` e encaminha as rotas `/v3`, `/v4` e `/version`, incluindo WebSocket, para o Lavalink. Painel e API usam a mesma URL HTTPS. O ZIP inclui o plugin YouTube customizado em `plugins/`, sem baixar também a versão oficial.
 
 Para gerar o ZIP pronto para upload (o JAR não é versionado pelo Git):
 
@@ -70,7 +72,7 @@ Para gerar o ZIP pronto para upload (o JAR não é versionado pelo Git):
 .\scripts\package-shardcloud.ps1
 ```
 
-No painel ShardCloud, crie uma aplicação com runtime Java e envie `dist/king-lavalink-shardcloud.zip`. O empacotador compila o inicializador com JDK 17 ou superior e gera uma senha aleatória no `application.yml` dentro do ZIP. Guarde essa senha para configurar o bot; não é preciso criar variável de ambiente. Na primeira inicialização, o inicializador baixa `Lavalink.jar` da release 4.2.2. O endereço HTTPS da aplicação serve tanto o painel quanto o Lavalink. No bot, use o host fornecido pela plataforma, a senha do `application.yml` e conexão segura (`wss`).
+No painel ShardCloud, crie uma aplicação com runtime Java e envie `dist/king-lavalink-shardcloud.zip`. O empacotador compila o inicializador com JDK 17 ou superior e inclui `dist/youtube-plugin-1.18.2-king-tv-ua.jar` em `plugins/`; se o JAR não existir, compila-o a partir do patch versionado. Ele preserva a senha existente em `dist/shardcloud/application.yml` durante novos empacotamentos; se essa pasta for removida, será gerada outra senha e o `LAVALINK_PASSWORD` do King precisará ser atualizado. Na primeira inicialização, o inicializador baixa `Lavalink.jar` da release 4.2.2. O endereço HTTPS da aplicação serve tanto o painel quanto o Lavalink; use conexão segura (`wss`) no bot.
 
 O pacote contém o inicializador Java executável, os arquivos do painel, `.shardcloud` e o `application.yml` de produção com a senha gerada. O JAR do Lavalink é baixado na primeira inicialização e não vai no ZIP. O pacote não inclui `.env` nem o `application.yml` local. A senha fica dentro do ZIP: proteja o arquivo e não o publique em repositórios. Para OAuth do YouTube, configure o token como segredo separado e referencie-o apenas se concluir o fluxo.
 ## Verificar se iniciou

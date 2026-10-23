@@ -9,6 +9,7 @@ application.yml
 
 # Logs and runtime data
 dist/
+plugins/*.jar
 logs/
 *.log
 hs_err_pid*

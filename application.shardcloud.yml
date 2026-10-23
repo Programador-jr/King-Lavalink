@@ -36,8 +36,8 @@ lavalink:
       tremolo: true
       vibrato: true
       volume: true
-  plugins:
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.2"
+  # YouTube is loaded from the patched JAR under ./plugins by the ShardCloud package.
+  plugins: []
 
 plugins:
   youtube:
