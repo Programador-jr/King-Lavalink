@@ -1,10 +1,17 @@
 ﻿server:
+  # Lavalink stays private behind the panel proxy.
+  address: 127.0.0.1
+  port: 2333
+
+# Read by scripts/start-shardcloud.py; Lavalink API paths are proxied here.
+panel:
   address: 0.0.0.0
   port: 80
 
 lavalink:
   server:
-    password: "${LAVALINK_SERVER_PASSWORD}"
+    # Replace before packaging; this value is included in application.yml.
+    password: "CHANGE-ME-TO-A-LONG-RANDOM-PASSWORD"
     sources:
       youtube: false
       bandcamp: true
