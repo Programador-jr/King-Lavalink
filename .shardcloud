@@ -1,4 +1,4 @@
 NAME=king-lavalink
-MAIN=scripts/start-shardcloud.py
+MAIN=king-lavalink-launcher.jar
 RAM=1024
 VERSION=recommended
