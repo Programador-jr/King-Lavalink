@@ -62,7 +62,7 @@ O endereço público configurado é comunitário e fornecido sem garantia de dis
 
 ## Deploy na ShardCloud
 
-Use o deploy Docker da ShardCloud. O `Dockerfile` inclui Java e Python, baixa o JAR oficial durante a construção da imagem e inicia `scripts/start-shardcloud.py`. O Lavalink escuta apenas em `127.0.0.1:2333`; o painel/proxy atende em `0.0.0.0:80`, serve a interface em `/` e encaminha as rotas `/v3`, `/v4` e `/version` (incluindo WebSocket) para o Lavalink. Assim, painel e Lavalink ficam no mesmo serviço e usam a mesma URL HTTPS. A configuração de produção baixa o plugin oficial `youtube-source` na inicialização.
+Use o runtime Java da ShardCloud. O arquivo `.shardcloud` aponta para `king-lavalink-launcher.jar`, um inicializador Java puro que baixa e executa o JAR oficial do Lavalink e serve o painel no mesmo processo. O Lavalink escuta apenas em `127.0.0.1:2333`; o inicializador atende em `0.0.0.0:80`, serve a interface em `/` e encaminha as rotas `/v3`, `/v4` e `/version`, incluindo WebSocket, para o Lavalink. Painel e API usam a mesma URL HTTPS. A configuração de produção baixa o plugin oficial `youtube-source` na inicialização do Lavalink.
 
 Para gerar o ZIP pronto para upload (o JAR não é versionado pelo Git):
 
@@ -70,9 +70,9 @@ Para gerar o ZIP pronto para upload (o JAR não é versionado pelo Git):
 .\scripts\package-shardcloud.ps1
 ```
 
-No painel ShardCloud, crie uma aplicação Docker a partir do arquivo `dist/king-lavalink-shardcloud.zip`. O empacotador gera uma senha aleatória e a grava em `application.yml` dentro do ZIP. Guarde essa senha para configurar o bot; não é preciso criar variável de ambiente. O endereço HTTPS da aplicação serve tanto o painel quanto o Lavalink. No bot, use o host fornecido pela plataforma, a senha do `application.yml` e conexão segura (`wss`).
+No painel ShardCloud, crie uma aplicação com runtime Java e envie `dist/king-lavalink-shardcloud.zip`. O empacotador compila o inicializador com JDK 17 ou superior e gera uma senha aleatória no `application.yml` dentro do ZIP. Guarde essa senha para configurar o bot; não é preciso criar variável de ambiente. Na primeira inicialização, o inicializador baixa `Lavalink.jar` da release 4.2.2. O endereço HTTPS da aplicação serve tanto o painel quanto o Lavalink. No bot, use o host fornecido pela plataforma, a senha do `application.yml` e conexão segura (`wss`).
 
-O pacote contém o Dockerfile, o inicializador, os arquivos do painel, `.shardcloud` e o `application.yml` de produção com a senha gerada. O JAR é baixado durante a construção da imagem e não vai no ZIP. O pacote não inclui `.env` nem o `application.yml` local. A senha fica dentro do ZIP: proteja o arquivo e não o publique em repositórios. Para OAuth do YouTube, configure o token como segredo separado e referencie-o apenas se concluir o fluxo.
+O pacote contém o inicializador Java executável, os arquivos do painel, `.shardcloud` e o `application.yml` de produção com a senha gerada. O JAR do Lavalink é baixado na primeira inicialização e não vai no ZIP. O pacote não inclui `.env` nem o `application.yml` local. A senha fica dentro do ZIP: proteja o arquivo e não o publique em repositórios. Para OAuth do YouTube, configure o token como segredo separado e referencie-o apenas se concluir o fluxo.
 ## Verificar se iniciou
 
 Em outro terminal, consulte a API local. Substitua a senha pela definida em `application.yml`:

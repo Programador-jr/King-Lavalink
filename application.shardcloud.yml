@@ -3,7 +3,7 @@
   address: 127.0.0.1
   port: 2333
 
-# Read by scripts/start-shardcloud.py; Lavalink API paths are proxied here.
+# Read by the Java launcher; Lavalink API paths are proxied here.
 panel:
   address: 0.0.0.0
   port: 80
