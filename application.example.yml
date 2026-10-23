@@ -7,7 +7,7 @@ lavalink:
   server:
     password: "${LAVALINK_SERVER_PASSWORD:change-me-before-running}"
     sources:
-      # YouTube is provided by youtube-source plugin below, not the built-in source.
+      # YouTube is provided by the custom youtube-source JAR under ./plugins.
       youtube: false
       bandcamp: true
       soundcloud: true
@@ -20,6 +20,7 @@ lavalink:
     frameBufferDurationMs: 5000
     youtubePlaylistLoadLimit: 6
     playerUpdateInterval: 5
+    trackStuckThresholdMs: 10000
     filters:
       channelMix: true
       equalizer: true
@@ -30,9 +31,7 @@ lavalink:
       tremolo: true
       vibrato: true
       volume: true
-  plugins:
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.15.0"
-      snapshot: false
+  plugins: []
 
 plugins:
   youtube:
@@ -42,13 +41,19 @@ plugins:
     allowDirectPlaylistIds: true
     clients:
       - MUSIC
+      # TV supports OAuth and can help when YouTube flags all unauthenticated clients.
+      - TV
       - ANDROID_VR
       - WEB
       - WEBEMBEDDED
-    # Community endpoint for initial testing only; it has no uptime guarantee.
-    # For production, deploy and use a private instance of yt-cipher.
+    oauth:
+      enabled: true
+      # Optional: set a refresh token after completing the OAuth flow once.
+      # Keep credentials out of Git and use a dedicated burner account, not your primary account.
+      # refreshToken: "${YOUTUBE_OAUTH_REFRESH_TOKEN}"
+    # Instância pública mantida pelo projeto yt-cipher; para produção, prefira hospedar a sua.
     remoteCipher:
-      url: "https://cipher.lavalink-harmonix.me/"
+      url: "https://cipher.kikkia.dev/"
       userAgent: "King-Lavalink"
 
 logging:
@@ -58,3 +63,4 @@ logging:
     root: INFO
     lavalink: INFO
     dev.lavalink.youtube: INFO
+    dev.lavalink.youtube.http.YoutubeOauth2Handler: INFO
