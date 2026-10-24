@@ -14,6 +14,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.Base64;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
@@ -38,6 +40,7 @@ public final class Launcher {
     private static final int MAX_BODY_BYTES = 8 * 1024 * 1024;
     private static String panelHtml;
     private static String lavalinkPassword;
+    private static String panelPassword;
     private static int lavalinkPort;
 
     private Launcher() {}
@@ -45,6 +48,8 @@ public final class Launcher {
     public static void main(String[] args) throws Exception {
         String config = Files.readString(CONFIG, StandardCharsets.UTF_8);
         lavalinkPassword = yamlValue(config, "password", "");
+        panelPassword = envValue("PANEL_PASSWORD", "");
+        if (panelPassword.isBlank()) throw new IllegalStateException("Defina PANEL_PASSWORD no ambiente.");
         lavalinkPort = Integer.parseInt(yamlValue(config, "port", "2333"));
         String panelHost = sectionValue(config, "panel", "address", "0.0.0.0");
         int panelPort = Integer.parseInt(sectionValue(config, "panel", "port", "80"));
@@ -106,6 +111,26 @@ public final class Launcher {
         return matcher.find() ? matcher.group(1) : fallback;
     }
 
+    private static String envValue(String key, String fallback) throws IOException {
+        String value = System.getenv(key);
+        if (value != null && !value.isBlank()) return value;
+        Path envFile = ROOT.resolve(".env");
+        if (!Files.exists(envFile)) return fallback;
+        for (String line : Files.readAllLines(envFile, StandardCharsets.UTF_8)) {
+            String trimmed = line.trim();
+            if (trimmed.isEmpty() || trimmed.startsWith("#")) continue;
+            int separator = trimmed.indexOf('=');
+            if (separator < 0 || !trimmed.substring(0, separator).trim().equals(key)) continue;
+            String configured = trimmed.substring(separator + 1).trim();
+            if (configured.length() >= 2 && ((configured.startsWith("\"") && configured.endsWith("\""))
+                    || (configured.startsWith("'") && configured.endsWith("'")))) {
+                configured = configured.substring(1, configured.length() - 1);
+            }
+            return configured;
+        }
+        return fallback;
+    }
+
     private static String sectionValue(String yaml, String section, String key, String fallback) {
         Matcher block = Pattern.compile("(?ms)^" + Pattern.quote(section)
                 + ":\\s*\\n((?:[ \\t]+.*\\n?)*)").matcher(yaml);
@@ -121,6 +146,13 @@ public final class Launcher {
             Request request = Request.read(socket.getInputStream());
             if (request == null) return;
             String path = URI.create(request.target).getPath();
+            if (isAdminPath(path) && !authorized(request)) {
+                writeResponse(socket.getOutputStream(), 401, Map.of(
+                        "Content-Type", List.of("text/plain; charset=utf-8"),
+                        "WWW-Authenticate", List.of("Basic realm=\"King-Lavalink Admin\", charset=\"UTF-8\"")),
+                        "Authentication required".getBytes(StandardCharsets.UTF_8));
+                return;
+            }
             if (request.headers.getOrDefault("upgrade", "").equalsIgnoreCase("websocket")) {
                 if (isLavalinkPath(path)) {
                     socket.setSoTimeout(0);
@@ -133,6 +165,12 @@ public final class Launcher {
                 status(socket.getOutputStream());
             } else if (request.method.equals("GET") && path.equals("/api/logs")) {
                 json(socket.getOutputStream(), jsonArray(tail(LOG_FILE, 200)));
+            } else if (request.method.equals("GET") && path.equals("/api/logs/download")) {
+                byte[] log = Files.exists(LOG_FILE) ? Files.readAllBytes(LOG_FILE) : new byte[0];
+                writeResponse(socket.getOutputStream(), 200, Map.of(
+                        "Content-Type", List.of("text/plain; charset=utf-8"),
+                        "Content-Disposition", List.of("attachment; filename=\"lavalink.log\""),
+                        "X-Content-Type-Options", List.of("nosniff")), log);
             } else if (request.method.equals("GET") && path.equals("/api/history")) {
                 json(socket.getOutputStream(), historyJson());
             } else if (isLavalinkPath(path)) {
@@ -147,6 +185,22 @@ public final class Launcher {
 
     private static boolean isLavalinkPath(String path) {
         return path.equals("/version") || path.startsWith("/v3/") || path.startsWith("/v4/");
+    }
+
+    private static boolean isAdminPath(String path) {
+        return path.equals("/") || path.startsWith("/api/");
+    }
+
+    private static boolean authorized(Request request) {
+        String header = request.headers.getOrDefault("authorization", "");
+        if (!header.startsWith("Basic ")) return false;
+        try {
+            byte[] supplied = Base64.getDecoder().decode(header.substring(6));
+            byte[] expected = Base64.getEncoder().encode(("admin:" + panelPassword).getBytes(StandardCharsets.UTF_8));
+            return MessageDigest.isEqual(supplied, expected);
+        } catch (IllegalArgumentException invalid) {
+            return false;
+        }
     }
 
     private static void status(OutputStream client) throws IOException {
